@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: timestamp
+    env: docker
+    repo: https://github.com/alayek/timestamp-microservice-go.git
+    region: singapore
+    plan: free
+    branch: main
+    healthCheckPath: /healthz
