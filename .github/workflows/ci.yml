@@ -1,0 +1,30 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: CI Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Commit
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: "./go.mod"
+
+      - name: Install Deps
+        run: |
+          go mod download
+
+      - name: Lint & Vet
+        run: go vet .
+
+      - name: Compile
+        run: sh ./build.sh
