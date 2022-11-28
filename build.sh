@@ -1,6 +1,6 @@
 #!/usr/env/bin sh
 
-set -euo pipefail
+set -euxo pipefail
 
 # build command
 go build -o /timestamp
