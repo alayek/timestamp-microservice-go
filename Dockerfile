@@ -1,8 +1,6 @@
 
 FROM golang:1.19.3-alpine as Builder
 
-ARG GIT_VERSION
-
 WORKDIR /app
 
 COPY go.mod ./
@@ -14,7 +12,7 @@ COPY ./build.sh ./
 
 COPY *.go ./
 
-RUN GIT_VERSION=${GIT_VERSION} sh ./build.sh
+RUN sh ./build.sh
 
 FROM alpine as Final
 
