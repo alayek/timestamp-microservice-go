@@ -1,8 +1,8 @@
 #!/usr/env/bin sh
 
-set -euxo pipefail
+set -exo pipefail
 
-if [ -z "${GIT_VERSION}"]; then
+if [ -z "${GIT_VERSION}" ]; then
   GIT_VERSION=$(git rev-parse --short HEAD)
 fi
 PACKAGE_NAME="main"
