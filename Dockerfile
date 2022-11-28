@@ -7,13 +7,15 @@ COPY go.sum ./
 
 RUN go mod download
 
+COPY ./build.sh ./
+
 COPY *.go ./
 
-RUN go build -o /timestamp
+RUN sh ./build.sh
 
 FROM alpine:edge as Final
 
-COPY --from=Builder /timestamp /sbin/timestamp
+COPY --from=Builder /app/timestamp /sbin/timestamp
 
 EXPOSE 8080
 
