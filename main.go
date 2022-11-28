@@ -27,21 +27,45 @@ type HealthCheckResponse struct {
 }
 
 const (
-	ResponseLayout = "Mon, 02 Jan 2006 15:04:05 GMT"
-	Port           = 8080
+	ResponseLayout     = "Mon, 02 Jan 2006 15:04:05 GMT"
+	DefaultPort        = 8080
+	RenderGitCommitVar = "RENDER_GIT_COMMIT"
+	PortEnvironmentVar = "PORT"
 )
 
-// will be populated once at the application bootup
-var CommitID string
+var (
+	// will be populated once at the application bootup
+	CommitID string
 
-// will be populated
-// through ldflags
-// at compile time
-var BuildDate string
+	// will be populated
+	// through ldflags
+	// at compile time
+	BuildDate string
+
+	Webport string
+)
 
 func setCommitId() {
 	// specific to render deployment
-	CommitID = os.Getenv("RENDER_GIT_COMMIT")
+	CommitID = os.Getenv(RenderGitCommitVar)
+}
+
+func setPort() {
+	port := os.Getenv(PortEnvironmentVar)
+	if len(port) != 0 {
+		// set the default value
+		Webport = fmt.Sprintf(":%s", port)
+	} else {
+		Webport = fmt.Sprintf(":%d", DefaultPort)
+	}
+}
+
+func bootstrap() {
+	// set commit ID for versioning
+	setCommitId()
+
+	// set port
+	setPort()
 }
 
 func main() {
@@ -56,7 +80,7 @@ func main() {
 
 func Run() error {
 	// bootstrap env vars
-	setCommitId()
+	bootstrap()
 
 	// set up routing
 	router := mux.NewRouter()
@@ -68,12 +92,11 @@ func Run() error {
 	router.HandleFunc("/api/{timestamp}/", handleTimeStamp).Methods("GET")
 
 	// start the server
-	webport := fmt.Sprintf(":%d", Port)
-	err := http.ListenAndServe(webport, router)
+	err := http.ListenAndServe(Webport, router)
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(os.Stderr, "Server started on port %d\n", Port)
+	fmt.Fprintf(os.Stderr, "Server listening on %s\n", Webport)
 	return nil
 }
 
