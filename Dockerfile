@@ -1,4 +1,7 @@
+
 FROM golang:1.19.3-alpine as Builder
+
+ARG GIT_VERSION
 
 WORKDIR /app
 
@@ -11,9 +14,9 @@ COPY ./build.sh ./
 
 COPY *.go ./
 
-RUN sh ./build.sh
+RUN GIT_VERSION=${GIT_VERSION} sh ./build.sh
 
-FROM alpine:edge as Final
+FROM alpine as Final
 
 COPY --from=Builder /app/timestamp /sbin/timestamp
 

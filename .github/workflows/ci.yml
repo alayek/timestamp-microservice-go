@@ -28,3 +28,5 @@ jobs:
 
       - name: Compile
         run: bash ./build.sh
+        env:
+          GIT_VERSION: $(git rev-parse --short HEAD)
