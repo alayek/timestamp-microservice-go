@@ -31,11 +31,18 @@ const (
 	Port           = 8080
 )
 
+// will be populated once at the application bootup
+var CommitID string
+
 // will be populated
 // through ldflags
 // at compile time
-var CommitID string
 var BuildDate string
+
+func setCommitId() {
+	// specific to render deployment
+	CommitID = os.Getenv("RENDER_GIT_COMMIT")
+}
 
 func main() {
 	err := Run()
@@ -48,6 +55,10 @@ func main() {
 }
 
 func Run() error {
+	// bootstrap env vars
+	setCommitId()
+
+	// set up routing
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", handleHealthCheck).Methods("GET")
 	router.HandleFunc("/healthz/", handleHealthCheck).Methods("GET")
