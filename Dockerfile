@@ -15,7 +15,7 @@ RUN sh ./build.sh
 
 FROM alpine:edge as Final
 
-COPY --from=Builder /timestamp /sbin/timestamp
+COPY --from=Builder /app/timestamp /sbin/timestamp
 
 EXPOSE 8080
 

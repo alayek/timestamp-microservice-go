@@ -3,4 +3,4 @@
 set -euxo pipefail
 
 # build command
-go build -o /timestamp
+go build -o ./timestamp
