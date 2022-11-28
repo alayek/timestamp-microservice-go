@@ -23,6 +23,7 @@ type ErrorResponse struct {
 
 type HealthCheckResponse struct {
 	Version string `json:"version"`
+	BuildAt string `json:"build-date"`
 }
 
 const (
@@ -30,7 +31,11 @@ const (
 	Port           = 8080
 )
 
+// will be populated
+// through ldflags
+// at compile time
 var CommitID string
+var BuildDate string
 
 func main() {
 	err := Run()
@@ -64,6 +69,7 @@ func Run() error {
 func handleHealthCheck(writer http.ResponseWriter, req *http.Request) {
 	healthCheck := &HealthCheckResponse{
 		Version: CommitID,
+		BuildAt: BuildDate,
 	}
 	bytes, err := json.Marshal(healthCheck)
 

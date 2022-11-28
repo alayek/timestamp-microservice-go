@@ -1,7 +1,7 @@
 
 FROM golang:1.19.3-alpine as Builder
 
-ARG GIT_VERSION
+RUN apk update && apk add git
 
 WORKDIR /app
 
@@ -12,9 +12,11 @@ RUN go mod download
 
 COPY ./build.sh ./
 
+COPY ./.git ./
+
 COPY *.go ./
 
-RUN GIT_VERSION=${GIT_VERSION} sh ./build.sh
+RUN sh ./build.sh
 
 FROM alpine as Final
 
