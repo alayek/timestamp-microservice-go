@@ -21,10 +21,16 @@ type ErrorResponse struct {
 	ErrorValue string `json:"error"`
 }
 
+type HealthCheckResponse struct {
+	Version string `json:"version"`
+}
+
 const (
 	ResponseLayout = "Mon, 02 Jan 2006 15:04:05 GMT"
 	Port           = 8080
 )
+
+var CommitID string
 
 func main() {
 	err := Run()
@@ -38,6 +44,8 @@ func main() {
 
 func Run() error {
 	router := mux.NewRouter()
+	router.HandleFunc("/healthz", handleHealthCheck).Methods("GET")
+	router.HandleFunc("/healthz/", handleHealthCheck).Methods("GET")
 	router.HandleFunc("/api", handleEmptyTimeStamp).Methods("GET")
 	router.HandleFunc("/api/", handleEmptyTimeStamp).Methods("GET")
 	router.HandleFunc("/api/{timestamp}", handleTimeStamp).Methods("GET")
@@ -51,6 +59,21 @@ func Run() error {
 	}
 	fmt.Fprintf(os.Stderr, "Server started on port %d\n", Port)
 	return nil
+}
+
+func handleHealthCheck(writer http.ResponseWriter, req *http.Request) {
+	healthCheck := &HealthCheckResponse{
+		Version: CommitID,
+	}
+	bytes, err := json.Marshal(healthCheck)
+
+	if err != nil {
+		writer.WriteHeader(http.StatusOK)
+		return
+	}
+
+	fmt.Fprint(writer, string(bytes))
+
 }
 
 func handleTimeStamp(writer http.ResponseWriter, req *http.Request) {
